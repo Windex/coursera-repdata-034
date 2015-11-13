@@ -1,67 +1,115 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 activity_data <- read.csv("activity.csv")
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 steps_per_day <- aggregate(steps ~ date, activity_data, sum)
 hist(steps_per_day$steps, col = "Red",
      main = "Histogram of Total Steps per Day",
      xlab = "Total Steps per Day")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 mean(steps_per_day$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps_per_day$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 steps_per_int <- aggregate(steps ~ interval, activity_data, mean)
 plot(steps_per_int$interval, steps_per_int$steps, type = "l",
      main = "Average Daily Activity Pattern",
      xlab = "5-minute Interval",
      ylab = "Average Steps Across All Days")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 subset(steps_per_int, steps == max(steps))
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 ## Imputing missing values
 
-```{r}
+
+```r
 sum(is.na(activity_data))
 ```
 
+```
+## [1] 2304
+```
+
 Adjust missing values by replacing with mean values by interval across all days.
-```{r}
+
+```r
 activity_data$mean <- steps_per_int$steps
 activity_data$steps[is.na(activity_data$steps)] <- 
     activity_data$mean[is.na(activity_data$steps)]
 ```
 
 Repeat steps above with adjusted activity data.
-```{r}
+
+```r
 steps_per_day <- aggregate(steps ~ date, activity_data, sum)
 hist(steps_per_day$steps, col = "Red",
      main = "Histogram of Total Steps per Day",
      xlab = "Total Steps per Day")
 mtext("(Adjusted for Missing Values)")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+```r
 mean(steps_per_day$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps_per_day$steps)
+```
+
+```
+## [1] 10766.19
 ```
 Comparing adjusted activity data to the original with missing values, the *mean* remained the same and the *median* became slightly larger.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 activity_data$weektype <- factor(
     grepl("Sat|Sun", weekdays(as.Date(activity_data$date))),
     labels = c("weekday", "weekend"))
@@ -77,3 +125,5 @@ xyplot(
     xlab = "5-minute Interval",
     ylab = "Average Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
